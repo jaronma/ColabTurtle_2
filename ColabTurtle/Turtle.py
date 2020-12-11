@@ -12,8 +12,8 @@ import math
 # It uses html capabilites of IPython library to draw svg shapes inline.
 # Looks of the figures are inspired from Blockly Games / Turtle (blockly-games.appspot.com/turtle)
 
-DEFAULT_WINDOW_SIZE = (800, 500)
-DEFAULT_SPEED = 4
+DEFAULT_WINDOW_SIZE = (600, 600)
+DEFAULT_SPEED = 6
 DEFAULT_TURTLE_VISIBILITY = True
 DEFAULT_PEN_COLOR = 'white'
 DEFAULT_TURTLE_DEGREE = 270
@@ -72,6 +72,8 @@ def initializeTurtle(initial_speed=DEFAULT_SPEED, initial_window_size=DEFAULT_WI
     global is_pen_down
     global svg_lines_string
     global pen_width
+    global is_filling
+    global svg_fill_string
 
     if initial_speed not in range(1, 14):
         raise ValueError('initial_speed should be an integer in interval [1,13]')
@@ -82,7 +84,7 @@ def initializeTurtle(initial_speed=DEFAULT_SPEED, initial_window_size=DEFAULT_WI
 
     window_size = initial_window_size
     timeout = _speedToSec(initial_speed)
-
+    
     is_turtle_visible = DEFAULT_TURTLE_VISIBILITY
     pen_color = DEFAULT_PEN_COLOR
     turtle_pos = (window_size[0] // 2, window_size[1] // 2)
@@ -91,6 +93,8 @@ def initializeTurtle(initial_speed=DEFAULT_SPEED, initial_window_size=DEFAULT_WI
     is_pen_down = DEFAULT_IS_PEN_DOWN
     svg_lines_string = DEFAULT_SVG_LINES_STRING
     pen_width = DEFAULT_PEN_WIDTH
+    is_filling = False
+    svg_fill_string = ''
 
     drawing_window = display(HTML(_generateSvgDrawing()), display_id=True)
 
@@ -125,11 +129,14 @@ def _updateDrawing():
 def _moveToNewPosition(new_pos):
     global turtle_pos
     global svg_lines_string
+    global svg_fill_string
 
     start_pos = turtle_pos
     if is_pen_down:
         svg_lines_string += """<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke-linecap="round" style="stroke:{pen_color};stroke-width:{pen_width}"/>""".format(
             x1=start_pos[0], y1=start_pos[1], x2=new_pos[0], y2=new_pos[1], pen_color=pen_color, pen_width=pen_width)
+    if is_filling:
+        svg_fill_string += """ L {x1} {y1} """.format(x1=new_pos[0],y1=new_pos[1])
 
     turtle_pos = new_pos
     _updateDrawing()
@@ -138,14 +145,35 @@ def _moveToNewPosition(new_pos):
 def _arctoNewPosition(r,new_pos):
     global turtle_pos
     global svg_lines_string
+    global svg_fill_string
     
     start_pos = turtle_pos
     if is_pen_down:
         svg_lines_string += """<path d="M {x1} {y1} A {rx} {ry} 0 0 1 {x2} {y2}" stroke-linecap="round" fill="transparent" style="stroke:{pen_color};stroke-width:{pen_width}"/>""".format(
             x1=start_pos[0], y1=start_pos[1],rx = r, ry = r, x2=new_pos[0], y2=new_pos[1], pen_color=pen_color, pen_width=pen_width)    
+    if is_filling:
+        svg_fill_string += """ A {rx} {ry} 0 0 1 {x2} {y2} """.format(rx=r,ry=r,x2=new_pos[0],y2=new_pos[1])
     
     turtle_pos = new_pos
     _updateDrawing()
+    
+def begin_fill():
+    global is_filling
+    global svg_fill_string
+    
+    is_filling = True
+    svg_fill_string = """<path d="M {x1} {y1} """.format(x1=turtle_pos[0], y1=turtle_pos[1])
+    
+    
+def end_fill():
+    global is_filling
+    global svg_fill_string
+    global svg_lines_string
+    
+    is_filling = False
+    svg_fill_string += """"Z stroke="none" fill="{fillcolor}" />""".format(fillcolor=pen_color)
+    svg_lines_string += svg_fill_string
+    svg_fill_string = ''
     
 
 def arc(radius, degrees):
