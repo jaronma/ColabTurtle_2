@@ -5,6 +5,9 @@ import math
 # Created at: 23rd October 2018
 #         by: Tolga Atam
 
+# In development: December 2020
+#             by: Jaron Ma 
+
 # Module for drawing classic Turtle figures on Google Colab notebooks.
 # It uses html capabilites of IPython library to draw svg shapes inline.
 # Looks of the figures are inspired from Blockly Games / Turtle (blockly-games.appspot.com/turtle)
@@ -131,11 +134,47 @@ def _moveToNewPosition(new_pos):
     turtle_pos = new_pos
     _updateDrawing()
 
+# helper function for drawing arcs
+def _arctoNewPosition(r,new_pos):
+    global turtle_pos
+    global svg_lines_string
+    
+    start_pos = turtle_pos
+    if is_pen_down:
+        svg_lines_string += """<path d="M {x1} {y1} A {rx} {ry} 0 0 1 {x2} {y2}" stroke-linecap="round" style="stroke:{pen_color};stroke-width:{pen_width}"/>""".format(
+            x1=start_pos[0], y1=start_pos[1],rx = r, ry = r, x2=new_pos[0], y2=new_pos[1], pen_color=pen_color, pen_width=pen_width)    
+    
+    turtle_pos = new_pos
+    _updateDrawing()
+    
+
+def arc(radius, degrees):
+    global turtle_degree
+    alpha = math.radians(turtle_degree)
+    beta = alpha + math.radians(90)
+    theta = math.radians(degrees)
+    gamma = theta-alpha
+    
+    circle_center = (turtle_pos[0] + radius * math.cos(beta), turtle_pos[1] + radius * math.sin(beta))
+    ending_point = (circle_center[0] + radius*math.cos(gamma) ,circle_center[1] + radius*math.sin(gamma))
+    
+    _arctoNewPosition(radius,ending_point)
+    
+    turtle_degree = (turtle_degree + degrees) % 360
+    _updateDrawing()
+    
+def circle(radius, degrees=360):
+    while degrees > 0:
+        if degrees > 90:
+            arc(radius, 90)
+        else:
+            arc(degrees)
+        degrees += -90
 
 # makes the turtle move forward by 'units' units
 def forward(units):
     if not (isinstance(units, int) or isinstance(units, float)):
-        raise ValueError('units should be int or float')
+        raise ValueError('units should be a number')
 
     alpha = math.radians(turtle_degree)
     ending_point = (turtle_pos[0] + units * math.cos(alpha), turtle_pos[1] + units * math.sin(alpha))
@@ -145,8 +184,8 @@ def forward(units):
 
 # makes the turtle move backward by 'units' units
 def backward(units):
-    if not isinstance(units, int):
-        raise ValueError('units should be an integer')
+    if not (isinstance(units, int) or isinstance(units, float)):
+        raise ValueError('units should be a number')
     forward(-1 * units)
 
 
