@@ -153,7 +153,7 @@ def arc(radius, degrees):
     alpha = math.radians(turtle_degree)
     beta = alpha + math.radians(90)
     theta = math.radians(degrees)
-    gamma = theta-beta
+    gamma = theta+alpha-math.radians(90)
     
     circle_center = (turtle_pos[0] + radius * math.cos(beta), turtle_pos[1] + radius * math.sin(beta))
     ending_point = (circle_center[0] + radius*math.cos(gamma) ,circle_center[1] + radius*math.sin(gamma))
@@ -168,7 +168,7 @@ def circle(radius, degrees=360):
         if degrees > 90:
             arc(radius, 90)
         else:
-            arc(degrees)
+            arc(radius, degrees)
         degrees += -90
 
 # makes the turtle move forward by 'units' units
