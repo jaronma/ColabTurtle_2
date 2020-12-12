@@ -5,22 +5,27 @@ import math
 # Created at: 23rd October 2018
 #         by: Tolga Atam
 
-# In development: December 2020
+# Edited: December 2020
 #             by: Jaron Ma 
 
 # Module for drawing classic Turtle figures on Google Colab notebooks.
 # It uses html capabilites of IPython library to draw svg shapes inline.
 # Looks of the figures are inspired from Blockly Games / Turtle (blockly-games.appspot.com/turtle)
 
+#original tools written by Tolga Atam at https://github.com/tolgaatam/ColabTurtle
+#Jaron's modifications include adding in circle(), begin_fill(), end_fill(),
+#easing some of the errors raised, and changing the default display settings
+
+
 DEFAULT_WINDOW_SIZE = (600, 600)
 DEFAULT_SPEED = 6
 DEFAULT_TURTLE_VISIBILITY = True
-DEFAULT_PEN_COLOR = 'white'
-DEFAULT_TURTLE_DEGREE = 270
-DEFAULT_BACKGROUND_COLOR = 'black'
+DEFAULT_PEN_COLOR = 'black'
+DEFAULT_TURTLE_DEGREE = 0
+DEFAULT_BACKGROUND_COLOR = 'white'
 DEFAULT_IS_PEN_DOWN = True
 DEFAULT_SVG_LINES_STRING = ""
-DEFAULT_PEN_WIDTH = 4
+DEFAULT_PEN_WIDTH = 3
 VALID_COLORS = ('white', 'yellow', 'orange', 'red', 'green', 'blue', 'purple', 'grey', 'black')
 SVG_TEMPLATE = """
       <svg width="{window_width}" height="{window_height}">
@@ -160,9 +165,10 @@ def _arctoNewPosition(r,new_pos):
 def begin_fill():
     global is_filling
     global svg_fill_string
-    
-    is_filling = True
-    svg_fill_string = """<path d="M {x1} {y1} """.format(x1=turtle_pos[0], y1=turtle_pos[1])
+    if not is_filling:
+        svg_fill_string = """<path d="M {x1} {y1} """.format(x1=turtle_pos[0], y1=turtle_pos[1])
+        is_filling = True
+
     
     
 def end_fill():
@@ -170,10 +176,11 @@ def end_fill():
     global svg_fill_string
     global svg_lines_string
     
-    is_filling = False
-    svg_fill_string += """"Z stroke="none" fill="{fillcolor}" />""".format(fillcolor=pen_color)
-    svg_lines_string += svg_fill_string
-    svg_fill_string = ''
+    if is_filling:
+        is_filling = False
+        svg_fill_string += """"Z stroke="none" fill="{fillcolor}" />""".format(fillcolor=pen_color)
+        svg_lines_string += svg_fill_string
+        svg_fill_string = ''
     
 
 def arc(radius, degrees):
@@ -190,8 +197,15 @@ def arc(radius, degrees):
     
     turtle_degree = (turtle_degree + degrees) % 360
     _updateDrawing()
-    
+
+#since SVG has some ambiguity when using an arc path for a complete circle...
+#the circle function is broken into chunks of at most 90 degrees
 def circle(radius, degrees=360):
+    if not (isinstance(radius, int) or isinstance(radius, float)):
+        raise ValueError('circle radius should be a number')
+    if not (isinstance(degrees, int) or isinstance(degrees,float)):
+        raise ValueError('degrees should be a number')
+    
     while degrees > 0:
         if degrees > 90:
             arc(radius, 90)
@@ -217,7 +231,7 @@ def backward(units):
     forward(-1 * units)
 
 
-# makes the turtle move right by 'degrees' degrees (NOT radians)
+# makes the turtle turn right by 'degrees' degrees (NOT radians)
 def right(degrees):
     global turtle_degree
 
@@ -239,7 +253,7 @@ def face(degrees):
     _updateDrawing()
 
 
-# makes the turtle move right by 'degrees' degrees (NOT radians)
+# makes the turtle turn left by 'degrees' degrees (NOT radians)
 def left(degrees):
     if not (isinstance(degrees, int) or isinstance(degrees, float)):
         raise ValueError('degrees should be a number')
@@ -336,7 +350,7 @@ def bgcolor(color):
     global background_color
 
     if not color in VALID_COLORS:
-        raise ValueError('color value should be one of the following: ' + str(VALID_COLORS))
+        print('Possible color error. Valid colors include: ' + str(VALID_COLORS))
     background_color = color
     _updateDrawing()
 
@@ -346,7 +360,7 @@ def color(color):
     global pen_color
 
     if not color in VALID_COLORS:
-        raise ValueError('color value should be one of the following: ' + str(VALID_COLORS))
+        print('Possible color error. Valid colors include: ' + str(VALID_COLORS))
     pen_color = color
     _updateDrawing()
 
