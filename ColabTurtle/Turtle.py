@@ -36,12 +36,12 @@ SVG_TEMPLATE = """
     """
 TURTLE_SVG_TEMPLATE = """
       <g visibility={visibility} transform="rotate({degrees},{turtle_x},{turtle_y}) translate({turtle_x}, {turtle_y})">
-        <ellipse stroke="{turtle_color}" stroke-width="2" fill="transparent" rx="5" ry="6" cx="0" cy="0"/>
+        <ellipse stroke="{turtle_color}" stroke-width="2" fill="transparent" rx="5" ry="6" cx="0" cy="14"/>
         <circle stroke="{turtle_color}" stroke-width="2" fill="transparent" r="4" cx="7.5" cy="-7.5"/>
         <circle stroke="{turtle_color}" stroke-width="2" fill="transparent" r="4" cx="-7.5" cy="-7.5"/>
         <circle stroke="{turtle_color}" stroke-width="2" fill="transparent" r="4" cx="7.5" cy="7.5"/>
         <circle stroke="{turtle_color}" stroke-width="2" fill="transparent" r="4" cx="-7.5" cy="7.5"/>
-        <ellipse stroke="{turtle_color}" stroke-width="2" fill="transparent" r="12" cx="0" cy="-12"/>
+        <ellipse stroke="{turtle_color}" stroke-width="2" fill="transparent" rx="2" ry="4" cx="0" cy="-12"/>
         <ellipse stroke="{turtle_color}" stroke-width="2" fill="transparent" rx="10" ry="12" cx="0" cy="0"/>
       </g>
     """
