@@ -36,8 +36,13 @@ SVG_TEMPLATE = """
     """
 TURTLE_SVG_TEMPLATE = """
       <g visibility={visibility} transform="rotate({degrees},{turtle_x},{turtle_y}) translate({turtle_x}, {turtle_y})">
-        <circle stroke="{turtle_color}" stroke-width="3" fill="transparent" r="12" cx="0" cy="0"/>
-        <polygon points="0,19 3,16 -3,16" style="fill:{turtle_color};stroke:{turtle_color};stroke-width:2"/>
+        <ellipse stroke="{turtle_color}" stroke-width="2" fill="transparent" rx="5" ry="6" cx="0" cy="0"/>
+        <circle stroke="{turtle_color}" stroke-width="2" fill="transparent" r="4" cx="7.5" cy="-7.5"/>
+        <circle stroke="{turtle_color}" stroke-width="2" fill="transparent" r="4" cx="-7.5" cy="-7.5"/>
+        <circle stroke="{turtle_color}" stroke-width="2" fill="transparent" r="4" cx="7.5" cy="7.5"/>
+        <circle stroke="{turtle_color}" stroke-width="2" fill="transparent" r="4" cx="-7.5" cy="7.5"/>
+        <ellipse stroke="{turtle_color}" stroke-width="2" fill="transparent" r="12" cx="0" cy="-12"/>
+        <ellipse stroke="{turtle_color}" stroke-width="2" fill="transparent" rx="10" ry="12" cx="0" cy="0"/>
       </g>
     """
 
