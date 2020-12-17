@@ -66,6 +66,7 @@ background_color = DEFAULT_BACKGROUND_COLOR
 is_pen_down = DEFAULT_IS_PEN_DOWN
 svg_lines_string = DEFAULT_SVG_LINES_STRING
 pen_width = DEFAULT_PEN_WIDTH
+is_filling = False
 
 drawing_window = None
 
