@@ -17,15 +17,18 @@ import math
 #easing some of the errors raised, and changing the default display settings
 
 
-DEFAULT_WINDOW_SIZE = (600, 600)
-DEFAULT_SPEED = 6
+#All the following defaults can be changed pretty readily
+DEFAULT_WINDOW_SIZE = (600, 600) #any larger than this, and I think some screens may not accommodate the full vertical size of the drawing window
+DEFAULT_SPEED = 6 
 DEFAULT_TURTLE_VISIBILITY = True
 DEFAULT_PEN_COLOR = 'black'
 DEFAULT_TURTLE_DEGREE = 0
 DEFAULT_BACKGROUND_COLOR = 'whitesmoke'
 DEFAULT_IS_PEN_DOWN = True
-DEFAULT_SVG_LINES_STRING = ""
 DEFAULT_PEN_WIDTH = 3
+
+#the following are less convenient to change
+DEFAULT_SVG_LINES_STRING = ""
 VALID_COLORS = ('white', 'yellow', 'orange', 'red', 'green', 'blue', 'purple', 'grey', 'black')
 SVG_TEMPLATE = """
       <svg width="{window_width}" height="{window_height}">
@@ -34,6 +37,7 @@ SVG_TEMPLATE = """
         {turtle}
       </svg>
     """
+#This is svg-formatted description of the turtle's appearance
 TURTLE_SVG_TEMPLATE = """
       <g visibility={visibility} transform="rotate({degrees},{turtle_x},{turtle_y}) translate({turtle_x}, {turtle_y})">
         <ellipse stroke="{turtle_color}" stroke-width="2" fill="transparent" rx="5" ry="6" cx="0" cy="15"/>
@@ -56,7 +60,6 @@ def _speedToSec(speed):
 
 
 timeout = _speedToSec(DEFAULT_SPEED)
-
 is_turtle_visible = DEFAULT_TURTLE_VISIBILITY
 pen_color = DEFAULT_PEN_COLOR
 window_size = DEFAULT_WINDOW_SIZE
@@ -71,7 +74,7 @@ is_filling = False
 drawing_window = None
 
 
-# construct the display for turtle
+# construct the display for turtle, usually the first command after importing.
 def initializeTurtle(initial_speed=DEFAULT_SPEED, initial_window_size=DEFAULT_WINDOW_SIZE):
     global window_size
     global drawing_window
@@ -111,7 +114,7 @@ def initializeTurtle(initial_speed=DEFAULT_SPEED, initial_window_size=DEFAULT_WI
     drawing_window = display(HTML(_generateSvgDrawing()), display_id=True)
 
 
-# helper function for generating svg string of the turtle
+# helper function for generating svg string of the turtle itself
 def _generateTurtleSvgDrawing():
     if is_turtle_visible:
         vis = 'visible'
@@ -137,7 +140,7 @@ def _updateDrawing():
     drawing_window.update(HTML(_generateSvgDrawing()))
 
 
-# helper function for managing any kind of move to a given 'new_pos' and draw lines if pen is down
+# helper function for managing forward/backward movement to 'new_pos' and draw lines if pen is down
 def _moveToNewPosition(new_pos):
     global turtle_pos
     global svg_lines_string
@@ -153,7 +156,7 @@ def _moveToNewPosition(new_pos):
     turtle_pos = new_pos
     _updateDrawing()
 
-# helper function for drawing arcs
+# helper function for drawing arcs of radius 'r' to 'new_pos' and draw line if pen is down
 def _arctoNewPosition(r,new_pos):
     global turtle_pos
     global svg_lines_string
@@ -168,7 +171,9 @@ def _arctoNewPosition(r,new_pos):
     
     turtle_pos = new_pos
     _updateDrawing()
-    
+
+
+#initialize the string for the svg path of the filled shape    
 def begin_fill():
     global is_filling
     global svg_fill_string
@@ -177,7 +182,7 @@ def begin_fill():
         is_filling = True
 
     
-    
+#terminate the string for the svg path of the filled shape and append to the list of drawn svg shapes    
 def end_fill():
     global is_filling
     global svg_fill_string
@@ -190,6 +195,7 @@ def end_fill():
         svg_fill_string = ''
         _updateDrawing()
 
+#draws a circular arc, centered 90degrees to the right of the turtle
 def arc(radius, degrees):
     global turtle_degree
     alpha = math.radians(turtle_degree)
@@ -212,6 +218,9 @@ def circle(radius, degrees=360):
         raise ValueError('circle radius should be a number')
     if not (isinstance(degrees, int) or isinstance(degrees,float)):
         raise ValueError('degrees should be a number')
+        
+    if degrees < 0:
+        raise ValueError('degrees should be a positive number')
     
     while degrees > 0:
         if degrees > 90:
@@ -298,8 +307,8 @@ def speed(speed):
 
 # move the turtle to a designated 'x' x-coordinate, y-coordinate stays the same
 def setx(x):
-    if not isinstance(x, int):
-        raise ValueError('new x position should be an integer')
+    if not (isinstance(x, int) or isinstance(x,float)):
+        raise ValueError('new x position should be a number')
     if not x >= 0:
         raise ValueError('new x position should be nonnegative')
     _moveToNewPosition((x, turtle_pos[1]))
@@ -307,8 +316,8 @@ def setx(x):
 
 # move the turtle to a designated 'y' y-coordinate, x-coordinate stays the same
 def sety(y):
-    if not isinstance(y, int):
-        raise ValueError('new y position should be an integer')
+    if not (isinstance(y, int) or isinstance(y,float)):
+        raise ValueError('new y position should be a number')
     if not y >= 0:
         raise ValueError('new y position should be nonnegative')
     _moveToNewPosition((turtle_pos[0], y))
