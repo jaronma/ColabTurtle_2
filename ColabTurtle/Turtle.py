@@ -188,7 +188,7 @@ def end_fill():
         svg_fill_string += """"Z stroke="none" fill="{fillcolor}" />""".format(fillcolor=pen_color)
         svg_lines_string += svg_fill_string
         svg_fill_string = ''
-    
+        _updateDrawing()
 
 def arc(radius, degrees):
     global turtle_degree
