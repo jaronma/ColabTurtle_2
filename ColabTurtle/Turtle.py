@@ -334,11 +334,11 @@ def gety():
 
 # move the turtle to a designated 'x'-'y' coordinate
 def goto(x, y):
-    if not isinstance(x, int) or isinstance(x,float)):
+    if not (isinstance(x, int) or isinstance(x,float)):
         raise ValueError('new x position should be a number')
     if not x >= 0:
         raise ValueError('new x position should be nonnegative')
-    if not isinstance(y, int) or isinstance(y,float)):
+    if not (isinstance(y, int) or isinstance(y,float)):
         raise ValueError('new y position sshould be a number')
     if not y >= 0:
         raise ValueError('new y position should be nonnegative')
